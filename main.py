@@ -1,9 +1,9 @@
 from Server.Server import Server
 import sys
-
+from Client.Client import Client
 
 if len(sys.argv) > 1:
-    pass
+    client = Client(sys.argv[1])
 
 else:
     server = Server()
