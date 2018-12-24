@@ -8,9 +8,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     for PORT in PORTS:
         try:
             s.connect((HOST, PORT))
-            msg = LOGIN + '/'+"HW1"
+            s.bind((HOST, PORT))
+            msg = LOGIN2 + '/'+"HW1"
             s.send(msg.encode())
-            data = s.recv(4096)
+            s.settimeout(100)
+            data = s.recv(50000)
             print('Received', repr(data))
         except: 
             pass

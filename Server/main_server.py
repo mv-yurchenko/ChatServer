@@ -20,12 +20,13 @@ for PORT in PORTS:
         if user_login not in LIST_OF_LOGINS:
             LIST_OF_LOGINS.append(user_login)
         else:
-            msg = str("Welcome back" + user_login).encode()
-            s.sendall(msg)
-            sleep(5)
-            reply = s.recv(4096)
-            print(reply)
-        print(data)
+            try:
+                msg = str("Welcome back " + user_login).encode()
+                print(msg)
+                s.sendall(msg)
+            except Exception as e:
+                print(e)
+        print(user_login)
         # try:
         #     conn.sendall(str(data).encode())
         # except Exception as e:
