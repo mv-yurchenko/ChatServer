@@ -10,7 +10,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((HOST, PORT))
             msg = LOGIN + '/'+"HW1"
             s.send(msg.encode())
-            print(s._closed)
             data = s.recv(4096)
             print('Received', repr(data))
         except: 
