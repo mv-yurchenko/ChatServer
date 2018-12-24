@@ -1,8 +1,8 @@
 import socket
 
-HOST = ''  # Standard loopback interface address (localhost)
-PORTS = [ i for i in range(65433, 66000)]        # Port to listen on (non-privileged ports are > 1023)
-
+HOST = '127.0.1.1'  # Standard loopback interface address (localhost)
+PORTS = [ i for i in range(60000, 65535)]        # Port to listen on (non-privileged ports are > 1023)
+LIST_OF_LOGINS = list()
 for PORT in PORTS:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((HOST, PORT))
@@ -11,8 +11,10 @@ for PORT in PORTS:
     print(PORT)
     with conn:
         print('Connected by', addr)
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            conn.sendall(data)
+        data = str(conn.recv(1024))
+        data.split("/")
+        print(data)            
+        try:
+            conn.sendall(str(data).encode())
+        except Exception as e:
+            print(e)
