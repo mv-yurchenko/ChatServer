@@ -6,9 +6,9 @@ class Server:
     """
     TODO
     """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def __init__(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind(("0.0.0.0", 10000))
         self.sock.listen(1)
         self.connections = list()
