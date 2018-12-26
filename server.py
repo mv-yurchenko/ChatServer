@@ -17,6 +17,9 @@ while not quit:
 	try:
 		data, addr = s.recvfrom(1024)
 
+		# ------- ! ----------
+		clients = []
+
 		if addr not in clients:
 			clients.append(addr)
 
@@ -29,8 +32,8 @@ while not quit:
 		for client in clients:
 			if addr != client:
 				s.sendto(data,client)
-	except:	
-		print("\n[ Server Stopped ]")
-		quit = True
-		
+	except Exception as e:
+		# print("\n[ Server Stopped ]")
+		# quit = True
+		print(e)
 s.close()
