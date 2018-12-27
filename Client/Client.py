@@ -2,8 +2,8 @@ import socket
 import threading
 import time
 
-# HOST = "192.168.56.1"
-HOST = "127.0.1.1"
+HOST = "192.168.56.1"
+# HOST = "127.0.1.1"
 
 
 class Client:
@@ -23,7 +23,8 @@ class Client:
         self.sock.close()
 
     def send_message(self, msg):
-        msg = self.encrypt_msg(msg)
+        encrypted_msg = self.encrypt_msg(msg)
+        msg = self.__compile_msg__(encrypted_msg)
         self.sock.sendto(bytes(msg, 'utf-8'), self.server)
 
     def receiving(self):
@@ -41,18 +42,18 @@ class Client:
     def decrypt_msg(self, data):
         decrypted_msg = ""
         k = False
-        for i in data.decode("utf-8"):
-            if i == ":":
+        for char in data.decode("utf-8"):
+            if char == ":":
                 k = True
-                decrypted_msg += i
-            elif k == False or i == " ":
-                decrypted_msg += i
+                decrypted_msg += char
+            elif k == False or char == " ":
+                decrypted_msg += char
             else:
-                decrypted_msg += chr(ord(i) ^ self.key)
+                decrypted_msg += chr(ord(char) ^ self.key)
         return decrypted_msg
 
     def encrypt_msg(self, msg):
-        encrypted_msg = ""
+        encrypted_msg = str()
         for i in msg:
             encrypted_msg += chr(ord(i) ^ self.key)
         return encrypted_msg
@@ -73,6 +74,13 @@ class Client:
             sum += ord(char)
             mult *= ord(char)
         self.key = int((sum + mult) / 2) //110000
+
+    def __compile_msg__(self, encrypted_msg):
+        msg = str()
+        msg += self.username
+        msg += "::" + encrypted_msg
+        return msg
+
 
 a = Client('user')
 msg = input()
