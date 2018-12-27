@@ -18,16 +18,19 @@ class Client:
         self.rT.start()
 
     def close_client(self):
+        """Закрывает сокет и останавливает поток"""
         self.stop_receiving = True
         self.rT.join()
         self.sock.close()
 
     def send_message(self, msg):
+        """Шифрование сообщения и отправка на сервер """
         encrypted_msg = self.encrypt_msg(msg)
         msg = self.__compile_msg__(encrypted_msg)
         self.sock.sendto(bytes(msg, 'utf-8'), self.server)
 
     def receiving(self):
+        """Функиця непрерывного получения данных с сервера в отдельном потоке"""
         while not self.stop_receiving:
             try:
                 while True:
@@ -40,6 +43,7 @@ class Client:
                 pass
 
     def decrypt_msg(self, data):
+        """Расшифровка сообщения"""
         decrypted_msg = ""
         k = False
         for char in data.decode("utf-8"):
@@ -53,12 +57,14 @@ class Client:
         return decrypted_msg
 
     def encrypt_msg(self, msg):
+        """Шифровка сообщения"""
         encrypted_msg = str()
         for i in msg:
             encrypted_msg += chr(ord(i) ^ self.key)
         return encrypted_msg
 
     def __connect__(self):
+        """Функция, инициализирующая подключенеи к серверу"""
         # host = socket.gethostbyname(socket.gethostname())
         host = HOST
         port = 0
@@ -68,6 +74,7 @@ class Client:
         self.sock.sendto(b"user connected", self.server)
 
     def __calculate_key__(self):
+        """Вычисление ключа шифрования по логину"""
         sum = 0
         mult = 1
         for char in self.username:
@@ -76,6 +83,7 @@ class Client:
         self.key = int((sum + mult) / 2) //110000
 
     def __compile_msg__(self, encrypted_msg):
+        """Составление строки для отправки на сервер"""
         msg = str()
         msg += self.username
         msg += "::" + encrypted_msg
