@@ -2,7 +2,8 @@ import socket
 import threading
 import time
 
-HOST = "192.168.56.1"
+# HOST = "192.168.56.1"
+HOST = "127.0.1.1"
 
 
 class Client:
@@ -21,8 +22,9 @@ class Client:
         self.rT.join()
         self.sock.close()
 
-    def send_message(self):
-        self.sock.sendto(bytes(input(), 'utf-8'), self.server)
+    def send_message(self, msg):
+        msg = self.encrypt_msg(msg)
+        self.sock.sendto(bytes(msg, 'utf-8'), self.server)
 
     def receiving(self):
         while not self.stop_receiving:
@@ -49,6 +51,12 @@ class Client:
                 decrypted_msg += chr(ord(i) ^ self.key)
         return decrypted_msg
 
+    def encrypt_msg(self, msg):
+        encrypted_msg = ""
+        for i in msg:
+            encrypted_msg += chr(ord(i) ^ self.key)
+        return encrypted_msg
+
     def __connect__(self):
         # host = socket.gethostbyname(socket.gethostname())
         host = HOST
@@ -64,9 +72,9 @@ class Client:
         for char in self.username:
             sum += ord(char)
             mult *= ord(char)
-        self.key = int((sum + mult) / 2)
+        self.key = int((sum + mult) / 2) //110000
 
 a = Client('user')
-
-a.send_message()
+msg = input()
+a.send_message(msg)
 a.close_client()
