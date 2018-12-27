@@ -17,8 +17,6 @@ while not quit:
 	try:
 		data, addr = s.recvfrom(1024)
 
-		# ------- ! ----------
-		clients = []
 
 		if addr not in clients:
 			clients.append(addr)
