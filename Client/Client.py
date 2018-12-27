@@ -2,8 +2,8 @@ import socket
 import threading
 import time
 
-HOST = "192.168.56.1"
-# HOST = "127.0.1.1"
+# HOST = "192.168.56.1"
+HOST = "127.0.1.1"
 
 
 class Client:
