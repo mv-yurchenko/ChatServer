@@ -6,9 +6,6 @@ import time
 
 
 class Server:
-    """
-    TODO
-    """
 
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

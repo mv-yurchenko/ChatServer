@@ -2,8 +2,8 @@ import socket
 import threading
 import time
 
-HOST = "192.168.56.1"
-# HOST = "127.0.1.1"
+# HOST = "192.168.56.1"
+HOST = "127.0.1.1"
 
 
 class Client:
@@ -17,6 +17,7 @@ class Client:
         self.stop_receiving = False
         self.rT = threading.Thread(target=self.receiving)
         self.rT.start()
+        self.messages_history = list()
 
         # По дефолту все сообщения паблик
         self.msg_receiver = "all"
@@ -49,7 +50,7 @@ class Client:
                     decrypted_msg = self.decrypt_msg(data)
                     time.sleep(0.2)
                     print(decrypted_msg)
-
+                    self.messages_history.append(decrypted_msg)
             except Exception as _:
                 pass
 
