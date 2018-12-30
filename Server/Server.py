@@ -36,12 +36,10 @@ class Server:
                 else:
                     sender, msg_type, receiver_id, msg_text = self.__process_msg__(data.decode("utf-8"))
                     self.__print_info_about_msg__(sender, msg_type, receiver_id, msg_text)
+
                     # Message for all server
                     if msg_type == "all":
-                        for client in self.clients.values():
-                            if client != address:
-                                print(client)
-                                self.sock.sendto(msg_text.encode("utf-8"), client)
+                        self.__send_msg_type_all__(sender, msg_text, address)
 
                     # Message for specific ID (User or char_room)
                     # Chat room coming soon
@@ -51,6 +49,12 @@ class Server:
 
             except Exception as e:
                 print(e)
+
+    def __send_msg_type_all__(self, sender, msg_text, address):
+        for client in self.clients.values():
+            msg = sender + "::" + msg_text
+            if client != address:
+                self.sock.sendto(msg.encode("utf-8"), client)
 
     def __print_info_about_msg__(self, sender, msg_type, receiver_id, msg_text):
         print("New message")

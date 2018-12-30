@@ -49,27 +49,20 @@ class Client:
             try:
                 while True:
                     data, addr = self.sock.recvfrom(4096)
-                    sender = str(data).split("::")[0]
+                    sender, msg_text = str(data).split("::")
                     print(sender)
-                    decrypted_msg = self.decrypt_msg(data)
+                    decrypted_msg = self.decrypt_msg(msg_text)
                     time.sleep(0.2)
                     print(decrypted_msg)
                     self.messages_history.append(decrypted_msg)
             except Exception as _:
                 pass
 
-    def decrypt_msg(self, data):
+    def decrypt_msg(self, msg):
         """Расшифровка сообщения"""
         decrypted_msg = ""
-        k = False
-        for char in data.decode("utf-8"):
-            if char == ":":
-                k = True
-                decrypted_msg += char
-            elif k == False or char == " ":
-                decrypted_msg += char
-            else:
-                decrypted_msg += chr(ord(char) ^ self.key)
+        for char in msg:
+            decrypted_msg += chr(ord(char) ^ self.key)
         return decrypted_msg
 
     def encrypt_msg(self, msg):
