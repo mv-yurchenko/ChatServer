@@ -35,11 +35,10 @@ class Server:
                 # If it's not new user
                 else:
                     msg_type, receiver_id, msg_text = self.__process_msg__(str(data))
-                    print(msg_type)
+                    print(msg_type, receiver_id, msg_text)
                     # Message for all server
                     if msg_type == "all":
                         for client in self.clients.values():
-                            print(type(client) == type(address))
                             if client != address:
                                 print(client)
                                 self.sock.sendto(msg_text.encode("utf-8"), client)

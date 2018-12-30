@@ -5,6 +5,8 @@ import time
 # HOST = "192.168.56.1"
 HOST = "127.0.1.1"
 
+# TODO : Username отправить на сервер, а там его обработать
+
 
 class Client:
 
@@ -47,6 +49,8 @@ class Client:
             try:
                 while True:
                     data, addr = self.sock.recvfrom(4096)
+                    sender = str(data).split("::")[0]
+                    print(sender)
                     decrypted_msg = self.decrypt_msg(data)
                     time.sleep(0.2)
                     print(decrypted_msg)
@@ -98,7 +102,7 @@ class Client:
         msg = str()
         msg += self.username
         msg += "::" + self.msg_receiver
-        print(self.companion_login)
+        # print(self.companion_login)
         msg += "::" + self.companion_login
         msg += "::" + encrypted_msg
         return msg
