@@ -34,8 +34,8 @@ class Server:
 
                 # If it's not new user
                 else:
-                    msg_type, receiver_id, msg_text = self.__process_msg__(str(data))
-                    print(msg_type, receiver_id, msg_text)
+                    sender, msg_type, receiver_id, msg_text = self.__process_msg__(data.decode("utf-8"))
+                    self.__print_info_about_msg__(sender, msg_type, receiver_id, msg_text)
                     # Message for all server
                     if msg_type == "all":
                         for client in self.clients.values():
@@ -48,10 +48,17 @@ class Server:
 
                     if msg_type == "private":
                         pass
-                print(self.clients.values())
 
             except Exception as e:
                 print(e)
+
+    def __print_info_about_msg__(self, sender, msg_type, receiver_id, msg_text):
+        print("New message")
+        print("Sender: ", sender)
+        print("Message type: ", msg_type)
+        print("Encrypted message text: ", msg_text)
+        print("Receiver id: ", receiver_id)
+        self.__print_separate_line__()
 
     def __new_user_connected__(self, new_user_address, username):
         self.clients[username] = new_user_address
@@ -63,13 +70,14 @@ class Server:
     @staticmethod
     def __process_msg__(msg):
         msg_data = msg.split("::")
+        sender = msg_data[0]
         msg_type = msg_data[1]
         msg_text = msg_data[3]
         if msg_type == "all":
-            return msg_type, None, msg_text
+            return sender, msg_type, None, msg_text
 
         if msg_type == "private":
-            return msg_type, msg_data[2], msg_text
+            return sender, msg_type, msg_data[2], msg_text
 
     @staticmethod
     def __print_separate_line__():
