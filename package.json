@@ -1,0 +1,9 @@
+{
+  "name": "ChatServerClient",
+  "version": "1.0.0",
+  "dependencies": {
+    "socket.io": "^2.2.0",
+    "threading": "~0.0.2",
+    "time": "~0.12.0"
+  }
+}
