@@ -56,7 +56,8 @@ class Server:
             if client != address:
                 self.sock.sendto(msg.encode("utf-8"), client)
 
-    def __print_info_about_msg__(self, sender, msg_type, receiver_id, msg_text):
+    def __print_info_about_msg__(self, *msg_info):
+        sender, msg_type, receiver_id, msg_text = msg_info
         print("New message")
         print("Sender: ", sender)
         print("Message type: ", msg_type)
