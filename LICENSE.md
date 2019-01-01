@@ -1,2 +1,2 @@
 
-Copyright (C) 2018 Max Yurchenko
+# Copyright (C) 2018 Max Yurchenko
