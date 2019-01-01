@@ -6,7 +6,7 @@ from Cryptography.Cryptography import Cryptography
 HOST = "192.168.56.1"
 # HOST = "127.0.1.1"
 
-# TODO : Username отправить на сервер, а там его обработать
+TEST_CRYPTO_KEY = "Rh0xMeKP2lzezFWiNMUMV1KavMsQ4s_jjycIfZdVF6k="
 
 
 class Client:
@@ -16,7 +16,7 @@ class Client:
         self.username = username
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.__connect__()
-        self.encrypting_msg = Cryptography(username)
+        self.cryptography = Cryptography(TEST_CRYPTO_KEY.encode("utf-8"))
         self.stop_receiving = False
         self.rT = threading.Thread(target=self.receiving)
         self.rT.start()
@@ -40,7 +40,7 @@ class Client:
 
     def send_message(self, msg):
         """Шифрование сообщения и отправка на сервер """
-        encrypted_msg = self.encrypting_msg.encrypt_string(msg)
+        encrypted_msg = self.cryptography.encrypt_string(msg)
         msg = self.__compile_msg__(encrypted_msg)
         self.sock.sendto(bytes(msg, 'utf-8'), self.server)
 
@@ -52,17 +52,15 @@ class Client:
                     data, addr = self.sock.recvfrom(4096)
                     sender, msg_text = data.decode("utf-8").split("::")
                     print(sender)
-                    decrypted_msg = self.__decrypt_msg__(sender,msg_text)
+                    decrypted_msg = self.__decrypt_msg__(msg_text.encode("utf-8"))
                     time.sleep(0.2)
                     print(decrypted_msg)
                     self.messages_history.append(decrypted_msg)
             except Exception as _:
                 pass
 
-    @staticmethod
-    def __decrypt_msg__(sender, encrypted_msg):
-        decrypting_obj = Cryptography(sender)
-        return decrypting_obj.decrypt_string(encrypted_msg)
+    def __decrypt_msg__(self, encrypted_msg):
+        return self.cryptography.decrypt_string(encrypted_msg)
 
     def __connect__(self):
         """Функция, инициализирующая подключенеи к серверу"""
