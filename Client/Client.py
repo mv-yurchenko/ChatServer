@@ -3,7 +3,7 @@ import threading
 import time
 from Cryptography.Cryptography import Cryptography
 
-HOST = "192.168.56.1"
+HOST = "192.168.0.13"
 # HOST = "127.0.1.1"
 
 TEST_CRYPTO_KEY = "Rh0xMeKP2lzezFWiNMUMV1KavMsQ4s_jjycIfZdVF6k="
@@ -37,12 +37,15 @@ class Client:
         self.stop_receiving = True
         self.rT.join()
         self.sock.close()
+        return 0
 
-    def send_message(self, msg):
+    def send_message(self, msg: str):
         """Шифрование сообщения и отправка на сервер """
+        if not isinstance(msg, str):
+            raise TypeError("")
         encrypted_msg = self.cryptography.encrypt_string(msg)
         msg = self.__compile_msg__(encrypted_msg)
-        self.sock.sendto(bytes(msg, 'utf-8'), self.server)
+        self.sock.sendto(msg, self.server)
 
     def receiving(self):
         """Функиця непрерывного получения данных с сервера в отдельном потоке"""
@@ -71,7 +74,7 @@ class Client:
         self.sock.setblocking(False)
         self.sock.sendto(self.username.encode("utf-8"), self.server)
 
-    def __compile_msg__(self, encrypted_msg):
+    def __compile_msg__(self, encrypted_msg) -> bytes:
         """Составление строки для отправки на сервер"""
         msg = str()
         msg += self.username
@@ -79,15 +82,15 @@ class Client:
         # print(self.companion_login)
         msg += "::" + self.companion_login
         msg += "::" + encrypted_msg
-        return msg
+        return msg.encode("utf-8")
 
 
-login = input("Input login: ")
-a = Client(login)
-fl = True
-while fl:
-    msg = input()
-    if msg == "exit":
-        fl = False
-    a.send_message(msg)
-a.close_client()
+# login = input("Input login: ")
+# a = Client(login)
+# fl = True
+# while fl:
+#     msg = input()
+#     if msg == "exit":
+#         fl = False
+#     a.send_message(msg)
+# a.close_client()
