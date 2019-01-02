@@ -3,15 +3,17 @@ import threading
 import time
 from Cryptography.Cryptography import Cryptography
 
-HOST = "192.168.56.1"
-# HOST = "127.0.1.1"
+# HOST = "192.168.56.1"
+HOST = "127.0.1.1"
 
 TEST_CRYPTO_KEY = "Rh0xMeKP2lzezFWiNMUMV1KavMsQ4s_jjycIfZdVF6k="
+
+# TODO:Fix global host
 
 
 class Client:
 
-    def __init__(self, username, is_private=False, companion_login=None):
+    def __init__(self, username, is_private=False, companion_login=None, host = HOST):
         # Client main functions initialization
         self.username = username
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,6 +23,7 @@ class Client:
         self.rT = threading.Thread(target=self.receiving)
         self.rT.start()
         self.messages_history = list()
+        self.host = host
 
         # По дефолту все сообщения паблик
         self.msg_receiver = "all"
@@ -64,10 +67,9 @@ class Client:
 
     def __connect__(self):
         """Функция, инициализирующая подключенеи к серверу"""
-        host = HOST
         port = 0
-        self.server = (host, 9090)
-        self.sock.bind((host, port))
+        self.server = (HOST, 9090)
+        self.sock.bind((HOST, port))
         self.sock.setblocking(False)
         self.sock.sendto(self.username.encode("utf-8"), self.server)
 
@@ -81,13 +83,15 @@ class Client:
         msg += "::" + encrypted_msg
         return msg
 
-
-login = input("Input login: ")
-a = Client(login)
-fl = True
-while fl:
-    msg = input()
-    if msg == "exit":
-        fl = False
-    a.send_message(msg)
-a.close_client()
+    def get_host(sefl):
+        return sefl.host
+    
+# login = input("Input login: ")
+# a = Client(login)
+# fl = True
+# while fl:
+#     msg = input()
+#     if msg == "exit":
+#         fl = False
+#     a.send_message(msg)
+# a.close_client()
