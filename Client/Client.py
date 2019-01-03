@@ -25,7 +25,7 @@ class Client:
         self.stop_receiving = False
         self.rT = threading.Thread(target=self.receiving)
         self.rT.start()
-        self.messages_history = list()
+        self.messages_history = dict()
         self.host = host
 
         # По дефолту все сообщения паблик
@@ -65,6 +65,7 @@ class Client:
                     decrypted_msg = self.__decrypt_msg__(msg_text.encode("utf-8"))
                     time.sleep(0.2)
                     print(decrypted_msg)
+                    # TODO: add message to dict
                     self.messages_history.append(decrypted_msg)
             except Exception as _:
                 pass
@@ -90,15 +91,9 @@ class Client:
         msg += "::" + encrypted_msg
         return msg.encode("utf-8")
 
-    def get_host(sefl):
-        return sefl.host
+    def get_host(self):
+        return self.host
 
-# login = input("Input login: ")
-# a = Client(login)
-# fl = True
-# while fl:
-#     msg = input()
-#     if msg == "exit":
-#         fl = False
-#     a.send_message(msg)
-# a.close_client()
+    def get_messages_list(self) -> dict:
+        return self.messages_history
+

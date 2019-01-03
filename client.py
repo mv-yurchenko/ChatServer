@@ -1,4 +1,4 @@
-from Client.ClientUI import ClientUI
+from ClientUI import ClientUI
 
 
 obj = ClientUI("User")

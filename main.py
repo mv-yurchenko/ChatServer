@@ -1,10 +1,11 @@
-from Server.Server import Server
-import sys
 from Client.Client import Client
 
-if len(sys.argv) > 1:
-    client = Client(sys.argv[1])
-
-else:
-    server = Server()
-    server.run()
+login = input("Input login: ")
+a = Client(login)
+fl = True
+while fl:
+    msg = input()
+    if msg == "exit":
+        fl = False
+    a.send_message(msg)
+a.close_client()
