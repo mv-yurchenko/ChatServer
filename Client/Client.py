@@ -3,17 +3,20 @@ import threading
 import time
 from Cryptography.Cryptography import Cryptography
 
-HOST = "192.168.56.1"
+
+HOST = "192.168.0.13"
 # HOST = "127.0.1.1"
 
+
 TEST_CRYPTO_KEY = "Rh0xMeKP2lzezFWiNMUMV1KavMsQ4s_jjycIfZdVF6k="
+
 
 # TODO:Fix global host
 
 
 class Client:
 
-    def __init__(self, username, is_private=False, companion_login=None, host = HOST):
+    def __init__(self, username, is_private=False, companion_login=None, host=HOST):
         # Client main functions initialization
         self.username = username
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -49,6 +52,7 @@ class Client:
         encrypted_msg = self.cryptography.encrypt_string(msg)
         msg = self.__compile_msg__(encrypted_msg)
         self.sock.sendto(msg, self.server)
+        return 0
 
     def receiving(self):
         """Функиця непрерывного получения данных с сервера в отдельном потоке"""

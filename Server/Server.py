@@ -14,13 +14,13 @@ class Server:
         self.clients = dict()
 
     def __initialize_server__(self):
-        host = socket.gethostbyname(socket.gethostname())
+        self.host = socket.gethostbyname(socket.gethostname())
         port = 9090
-        self.sock.bind((host, port))
+        self.sock.bind((self.host, port))
 
         print("Server started")
         print(self.__get_current_time__())
-        print("Server host: ", host)
+        print("Server host: ", self.host)
         print("Server port: ", port)
         self.__print_separate_line__()
 
@@ -91,6 +91,9 @@ class Server:
     @staticmethod
     def __get_current_time__():
         return time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
+
+    def get_host(self):
+        return self.host
 
 
 server = Server()
