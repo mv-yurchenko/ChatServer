@@ -25,7 +25,7 @@ class Client:
         self.stop_receiving = False
         self.rT = threading.Thread(target=self.receiving)
         self.rT.start()
-        self.messages_history = dict()
+        self.messages_history = list()
         self.host = host
 
         # По дефолту все сообщения паблик
@@ -60,13 +60,16 @@ class Client:
             try:
                 while True:
                     data, addr = self.sock.recvfrom(4096)
+                    msg_time = self.__get_current_time__()
                     sender, msg_text = data.decode("utf-8").split("::")
                     print(sender)
                     decrypted_msg = self.__decrypt_msg__(msg_text.encode("utf-8"))
                     time.sleep(0.2)
                     print(decrypted_msg)
-                    # TODO: add message to dict
-                    self.messages_history.append(decrypted_msg)
+
+                    # Add time for output
+                    self.messages_history.append((msg_time,sender, decrypted_msg))
+
             except Exception as _:
                 pass
 
@@ -94,6 +97,9 @@ class Client:
     def get_host(self):
         return self.host
 
-    def get_messages_list(self) -> dict:
+    def get_messages_data(self) -> list:
         return self.messages_history
 
+    @staticmethod
+    def __get_current_time__() -> str:
+        return time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())

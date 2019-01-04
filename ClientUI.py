@@ -37,8 +37,10 @@ class ClientUI:
         while not exit:
             self.__clear_screen__()
             self.print_header()
-            print(self.client_obj.get_messages_list())
-            time.sleep(2)
+            self.__print_separate_line__()
+            messages_data = self.client_obj.get_messages_data()
+            self.print_messages(messages_data)
+            time.sleep(0.1)
 
     @staticmethod
     def __clear_screen__():
@@ -46,6 +48,15 @@ class ClientUI:
             os.system("cls")
         if platform.system() == "Linux":
             os.system("clear")
+
+    @staticmethod
+    def print_messages(messages_data: list):
+        for msg_time, sender, message in messages_data:
+            print(msg_time + " : " + sender + ":" + message)
+
+    @staticmethod
+    def __print_separate_line__():
+        print("\n--------------------------------------------------\n")
 
 
 a = ClientUI()

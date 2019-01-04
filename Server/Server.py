@@ -44,7 +44,6 @@ class Server:
 
                     # Message for specific ID (User or char_room)
                     # Chat room coming soon
-
                     if msg_type == "private":
                         pass
 
