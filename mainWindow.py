@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'mainWindow.ui'
-#
-# Created by: PyQt5 UI code generator 5.10.1
-#
-# WARNING! All changes made in this file will be lost!
-
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction
+from Client.Client import Client
 import sys
 
 
-class Ui_MainWindow(QtWidgets.QMainWindow):
+class Ui_MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
@@ -55,9 +51,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.actionExit = QtWidgets.QAction(MainWindow)
-        self.actionExit.setObjectName("actionExit")
-        self.topMenu.addAction(self.actionExit)
+        self.exit_button = QtWidgets.QAction(MainWindow)
+        self.exit_button.setObjectName("actionExit")
+        self.topMenu.addAction(self.exit_button)
         self.menubar.addAction(self.topMenu.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -71,8 +67,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.AcceptUsernameButton.setText(_translate("MainWindow", "OK"))
         self.HostLabel.setText(_translate("MainWindow", "Host:"))
         self.topMenu.setTitle(_translate("MainWindow", "Menu"))
-        self.actionExit.setText(_translate("MainWindow", "Exit"))
-
+        self.exit_button.setText(_translate("MainWindow", "Exit"))
+        self.exit_button.triggered.connect(self.close)
 
 # class ExampleApp(QtWidgets.QMainWindow, Ui_MainWindow):
 #     def __init__(self):
