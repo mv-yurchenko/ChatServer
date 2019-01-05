@@ -2,7 +2,7 @@ import socket
 import threading
 import time
 from Cryptography.Cryptography import Cryptography
-
+from Client.LogWriter import LogWriter
 
 HOST = "192.168.0.13"
 # HOST = "127.0.1.1"
@@ -23,9 +23,10 @@ class Client:
         self.__connect__()
         self.cryptography = Cryptography(TEST_CRYPTO_KEY.encode("utf-8"))
         self.stop_receiving = False
-        self.rT = threading.Thread(target=self.receiving)
-        self.rT.start()
+        self.receiving_thread = threading.Thread(target=self.receiving)
+        self.receiving_thread.start()
         self.messages_history = list()
+        self.messages_data_writer = LogWriter(str(username) + ".txt", 'w')
         self.host = host
 
         # По дефолту все сообщения паблик
@@ -41,7 +42,7 @@ class Client:
     def close_client(self):
         """Закрывает сокет и останавливает поток"""
         self.stop_receiving = True
-        self.rT.join()
+        self.receiving_thread.join()
         self.sock.close()
         return 0
 
@@ -69,7 +70,7 @@ class Client:
 
                     # Add time for output
                     self.messages_history.append((msg_time,sender, decrypted_msg))
-
+                    self.messages_data_writer.write(str(self.messages_history))
             except Exception as _:
                 pass
 

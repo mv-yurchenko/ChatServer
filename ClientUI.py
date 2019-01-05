@@ -2,6 +2,7 @@ from Client.Client import Client
 import time
 import os
 import platform
+from threading import Thread
 
 
 VERSION = "1.1"

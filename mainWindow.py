@@ -12,7 +12,7 @@ class Ui_MainWindow(QMainWindow):
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.StartClientButton.clicked.connect(self.button_start_clicked)
-        self.client_obj = None
+        self.client_obj : Client
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -22,6 +22,7 @@ class Ui_MainWindow(QMainWindow):
         self.sendMessageButton = QtWidgets.QPushButton(self.centralwidget)
         self.sendMessageButton.setGeometry(QtCore.QRect(380, 520, 111, 27))
         self.sendMessageButton.setObjectName("sendMessageButton")
+        self.sendMessageButton.clicked.connect(self.send_message_button_clicked)
         self.inputMessageLineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.inputMessageLineEdit.setGeometry(QtCore.QRect(30, 520, 321, 27))
         self.inputMessageLineEdit.setObjectName("inputMessageLineEdit")
@@ -70,7 +71,7 @@ class Ui_MainWindow(QMainWindow):
         self.HostLabel.setText(_translate("MainWindow", "Host:"))
         self.topMenu.setTitle(_translate("MainWindow", "Menu"))
         self.exit_button.setText(_translate("MainWindow", "Exit"))
-        self.exit_button.triggered.connect(self.close)
+        self.exit_button.triggered.connect(self.button_exit_clicked)
 
     def button_start_clicked(self):
         # Return colour to black if btn was already pressed with empty field
@@ -80,6 +81,7 @@ class Ui_MainWindow(QMainWindow):
 
         # If username is empty -> print red string
         if self.is_username_empty(username):
+            # Output red text in inputMessageLineEdit
             self.inputUsernameLineEdit.setStyleSheet("color:red")
             self.inputUsernameLineEdit.setText("no username")
         else:
@@ -87,9 +89,18 @@ class Ui_MainWindow(QMainWindow):
             print(self.client_obj.get_host())
             print("ok")
 
+    def send_message_button_clicked(self):
+        # TODO : Rework
+        self.textBrowser.setText(str(self.client_obj.get_messages_data()))
+
     @staticmethod
     def is_username_empty(username):
         return username == "" or username == "no username"
+
+    def button_exit_clicked(self):
+        if self.client_obj:
+            self.client_obj.close_client()
+        self.close()
 
 
 def main():
