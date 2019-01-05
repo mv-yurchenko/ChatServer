@@ -32,6 +32,7 @@ class Server:
                 data, address = self.sock.recvfrom(4096)
                 if address not in self.clients.values():
                     self.__new_user_connected__(address, data)
+                    self.sock.sendto(str(self.clients), address)
 
                 # If it's not new user
                 else:

@@ -11,6 +11,8 @@ class Ui_MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
+        self.StartClientButton.clicked.connect(self.button_start_clicked)
+        self.client_obj = None
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -30,11 +32,11 @@ class Ui_MainWindow(QMainWindow):
         self.inputUsernameLabel.setGeometry(QtCore.QRect(490, 30, 111, 21))
         self.inputUsernameLabel.setObjectName("inpuUsernameLabel")
         self.inputUsernameLineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.inputUsernameLineEdit.setGeometry(QtCore.QRect(600, 30, 100, 21))
+        self.inputUsernameLineEdit.setGeometry(QtCore.QRect(600, 30, 150, 21))
         self.inputUsernameLineEdit.setObjectName("inputUsernameLineEdit")
-        self.AcceptUsernameButton = QtWidgets.QPushButton(self.centralwidget)
-        self.AcceptUsernameButton.setGeometry(QtCore.QRect(720, 30, 41, 20))
-        self.AcceptUsernameButton.setObjectName("AcceptUsernameButton")
+        self.StartClientButton = QtWidgets.QPushButton(self.centralwidget)
+        self.StartClientButton.setGeometry(QtCore.QRect(751, 30, 46, 20))
+        self.StartClientButton.setObjectName("StartClientButton")
         self.HostLabel = QtWidgets.QLabel(self.centralwidget)
         self.HostLabel.setGeometry(QtCore.QRect(490, 60, 41, 17))
         self.HostLabel.setObjectName("HostLabel")
@@ -64,18 +66,30 @@ class Ui_MainWindow(QMainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.sendMessageButton.setText(_translate("MainWindow", "Send Message"))
         self.inputUsernameLabel.setText(_translate("MainWindow", "Input Username"))
-        self.AcceptUsernameButton.setText(_translate("MainWindow", "OK"))
+        self.StartClientButton.setText(_translate("MainWindow", "Start"))
         self.HostLabel.setText(_translate("MainWindow", "Host:"))
         self.topMenu.setTitle(_translate("MainWindow", "Menu"))
         self.exit_button.setText(_translate("MainWindow", "Exit"))
         self.exit_button.triggered.connect(self.close)
 
-# class ExampleApp(QtWidgets.QMainWindow, Ui_MainWindow):
-#     def __init__(self):
-#         # Это здесь нужно для доступа к переменным, методам
-#         # и т.д. в файле design.py
-#         super().__init__()
-#         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
+    def button_start_clicked(self):
+        # Return colour to black if btn was already pressed with empty field
+        self.inputUsernameLineEdit.setStyleSheet("color:black")
+
+        username = self.inputUsernameLineEdit.text()
+
+        # If username is empty -> print red string
+        if self.is_username_empty(username):
+            self.inputUsernameLineEdit.setStyleSheet("color:red")
+            self.inputUsernameLineEdit.setText("no username")
+        else:
+            self.client_obj = Client(username)
+            print(self.client_obj.get_host())
+            print("ok")
+
+    @staticmethod
+    def is_username_empty(username):
+        return username == "" or username == "no username"
 
 
 def main():
