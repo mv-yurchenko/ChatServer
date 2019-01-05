@@ -4,6 +4,8 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction
 from Client.Client import Client
 import sys
+from threading import Thread
+from queue import Queue
 
 
 class Ui_MainWindow(QMainWindow):
@@ -13,6 +15,8 @@ class Ui_MainWindow(QMainWindow):
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.StartClientButton.clicked.connect(self.button_start_clicked)
         self.client_obj : Client
+        self.gui_connector = Queue()
+        self.output_thread = Thread(target=self.print_messages)
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -26,9 +30,9 @@ class Ui_MainWindow(QMainWindow):
         self.inputMessageLineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.inputMessageLineEdit.setGeometry(QtCore.QRect(30, 520, 321, 27))
         self.inputMessageLineEdit.setObjectName("inputMessageLineEdit")
-        self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
-        self.textBrowser.setGeometry(QtCore.QRect(20, 30, 461, 481))
-        self.textBrowser.setObjectName("textBrowser")
+        self.MessagesOutputWidget = QtWidgets.QTextBrowser(self.centralwidget)
+        self.MessagesOutputWidget.setGeometry(QtCore.QRect(20, 30, 461, 481))
+        self.MessagesOutputWidget.setObjectName("MessagesOutputWidget")
         self.inputUsernameLabel = QtWidgets.QLabel(self.centralwidget)
         self.inputUsernameLabel.setGeometry(QtCore.QRect(490, 30, 111, 21))
         self.inputUsernameLabel.setObjectName("inpuUsernameLabel")
@@ -73,6 +77,9 @@ class Ui_MainWindow(QMainWindow):
         self.exit_button.setText(_translate("MainWindow", "Exit"))
         self.exit_button.triggered.connect(self.button_exit_clicked)
 
+    def print_messages(self):
+        self.MessagesOutputWidget.setText(str(self.client_obj.get_messages_data()))
+
     def button_start_clicked(self):
         # Return colour to black if btn was already pressed with empty field
         self.inputUsernameLineEdit.setStyleSheet("color:black")
@@ -86,18 +93,25 @@ class Ui_MainWindow(QMainWindow):
             self.inputUsernameLineEdit.setText("no username")
         else:
             self.client_obj = Client(username)
+            self.gui_connector = self.client_obj.get_gui_connector()
             print(self.client_obj.get_host())
             print("ok")
 
+        # Start print messages
+
+    def print_messages(self):
+        self.MessagesOutputWidget.setText(str(self.client_obj.get_messages_data()))
+
     def send_message_button_clicked(self):
         # TODO : Rework
-        self.textBrowser.setText(str(self.client_obj.get_messages_data()))
+        self.MessagesOutputWidget.setText(str(self.gui_connector.get()))
 
     @staticmethod
     def is_username_empty(username):
         return username == "" or username == "no username"
 
     def button_exit_clicked(self):
+        self.output_thread.join()
         if self.client_obj:
             self.client_obj.close_client()
         self.close()

@@ -3,6 +3,7 @@ import threading
 import time
 from Cryptography.Cryptography import Cryptography
 from Client.LogWriter import LogWriter
+from queue import Queue
 
 HOST = "192.168.0.13"
 # HOST = "127.0.1.1"
@@ -26,8 +27,8 @@ class Client:
         self.receiving_thread = threading.Thread(target=self.receiving)
         self.receiving_thread.start()
         self.messages_history = list()
-        self.messages_data_writer = LogWriter(str(username) + ".txt", 'w')
         self.host = host
+        self.GUI_connector = Queue()
 
         # По дефолту все сообщения паблик
         self.msg_receiver = "all"
@@ -69,8 +70,8 @@ class Client:
                     print(decrypted_msg)
 
                     # Add time for output
-                    self.messages_history.append((msg_time,sender, decrypted_msg))
-                    self.messages_data_writer.write(str(self.messages_history))
+                    self.messages_history.append((msg_time, sender, decrypted_msg))
+                    self.GUI_connector.put(self.messages_history)
             except Exception as _:
                 pass
 
@@ -104,3 +105,6 @@ class Client:
     @staticmethod
     def __get_current_time__() -> str:
         return time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
+
+    def get_gui_connector(self):
+        return self.GUI_connector
