@@ -69,9 +69,10 @@ class Server:
         print("Receiver id: ", receiver_id)
         self.__print_separate_line__()
 
-    def __new_user_connected__(self, new_user_address, username):
+    def __new_user_connected__(self, new_user_address, username : bytes):
         self.clients[username] = new_user_address
         print("New user connected")
+        print("Username: ", username.decode("utf-8"))
         print("IP: ", new_user_address[0])
         print("PORT: ", new_user_address[1])
         self.__print_separate_line__()
