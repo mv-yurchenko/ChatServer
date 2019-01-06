@@ -1,8 +1,8 @@
 import socket
+import tkinter as tk
 import threading
 import time
 from Cryptography.Cryptography import Cryptography
-from Client.LogWriter import LogWriter
 from queue import Queue
 
 HOST = "192.168.0.13"
@@ -29,6 +29,11 @@ class Client:
         self.messages_history = list()
         self.host = host
         self.GUI_connector = Queue()
+
+        self.top = tk.Tk()
+        self.tex = tk.Text(master=self.top)
+        self.tex.pack(side=tk.RIGHT)
+        self.top.mainloop()
 
         # По дефолту все сообщения паблик
         self.msg_receiver = "all"
@@ -68,7 +73,7 @@ class Client:
                     decrypted_msg = self.__decrypt_msg__(msg_text.encode("utf-8"))
                     time.sleep(0.2)
                     print(decrypted_msg)
-
+                    self.tex.insert(tk.END, decrypted_msg)
                     # Add time for output
                     self.messages_history.append((msg_time, sender, decrypted_msg))
                     self.GUI_connector.put(self.messages_history)
