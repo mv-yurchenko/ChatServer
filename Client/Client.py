@@ -28,12 +28,6 @@ class Client:
         self.receiving_thread.start()
         self.messages_history = list()
         self.host = host
-        self.GUI_connector = Queue()
-
-        self.top = tk.Tk()
-        self.tex = tk.Text(master=self.top)
-        self.tex.pack(side=tk.RIGHT)
-        self.top.mainloop()
 
         # По дефолту все сообщения паблик
         self.msg_receiver = "all"
@@ -63,6 +57,7 @@ class Client:
 
     def receiving(self):
         """Функиця непрерывного получения данных с сервера в отдельном потоке"""
+        print("Thread started")
         while not self.stop_receiving:
             try:
                 while True:
@@ -76,7 +71,6 @@ class Client:
                     self.tex.insert(tk.END, decrypted_msg)
                     # Add time for output
                     self.messages_history.append((msg_time, sender, decrypted_msg))
-                    self.GUI_connector.put(self.messages_history)
             except Exception as _:
                 pass
 
@@ -110,6 +104,3 @@ class Client:
     @staticmethod
     def __get_current_time__() -> str:
         return time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
-
-    def get_gui_connector(self):
-        return self.GUI_connector
