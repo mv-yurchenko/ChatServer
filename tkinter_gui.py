@@ -1,22 +1,20 @@
-import tkinter as tk
+from tkinter import *
 from threading import Thread
-from Client.Client import Client
 
+tk=Tk()
 
+text=StringVar()
+name=StringVar()
+name.set('HabrUser')
+text.set('')
+tk.title('MegaChat')
+tk.geometry('400x300')
 
+log = Text(tk)
+nick = Entry(tk, textvariable=name)
+msg = Entry(tk, textvariable=text)
+msg.pack(side='bottom', fill='x', expand='true')
+nick.pack(side='bottom', fill='x', expand='true')
+log.pack(side='top', fill='both',expand='true')
 
-
-def foo(thread_num):
-    for i in range(100):
-        print(i)
-        tex.insert(tk.END, str(thread_num) + " : " + str(i) + "\n")
-        tex.see(tk.END)
-
-
-t1 = Thread(target=foo, args=[1])
-t2 = Thread(target=foo, args=[2])
-t1.start()
-t2.start()
-
-
-top.mainloop()
+tk.mainloop()
