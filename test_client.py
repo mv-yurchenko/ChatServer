@@ -22,5 +22,4 @@ class TestClient(TestCase):
         obj.close_client()
 
     def test_receiving(self):
-        # TODO: How test receiving function?
         pass
