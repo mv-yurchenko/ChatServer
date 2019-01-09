@@ -3,6 +3,7 @@ import threading
 import time
 
 # Сервер соединяет n пользователей и ретранслирует сообщение одного пользователя всем остальным
+#   TODO : Удаление отключенных пользователей из рассылки (проверка на активность?)
 
 
 class Server:
@@ -14,13 +15,13 @@ class Server:
         self.clients = dict()
 
     def __initialize_server__(self):
-        host = socket.gethostbyname(socket.gethostname())
+        self.host = socket.gethostbyname(socket.gethostname())
         port = 9090
-        self.sock.bind((host, port))
+        self.sock.bind((self.host, port))
 
         print("Server started")
         print(self.__get_current_time__())
-        print("Server host: ", host)
+        print("Server host: ", self.host)
         print("Server port: ", port)
         self.__print_separate_line__()
 
@@ -31,6 +32,7 @@ class Server:
                 data, address = self.sock.recvfrom(4096)
                 if address not in self.clients.values():
                     self.__new_user_connected__(address, data)
+                    self.sock.sendto(str(self.clients), address)
 
                 # If it's not new user
                 else:
@@ -43,7 +45,6 @@ class Server:
 
                     # Message for specific ID (User or char_room)
                     # Chat room coming soon
-
                     if msg_type == "private":
                         pass
 
@@ -56,6 +57,9 @@ class Server:
             if client != address:
                 self.sock.sendto(msg.encode("utf-8"), client)
 
+    def __send_msg_type_private(self, sender, msg_text, receiver):
+        pass
+
     def __print_info_about_msg__(self, *msg_info):
         sender, msg_type, receiver_id, msg_text = msg_info
         print("New message")
@@ -65,9 +69,10 @@ class Server:
         print("Receiver id: ", receiver_id)
         self.__print_separate_line__()
 
-    def __new_user_connected__(self, new_user_address, username):
+    def __new_user_connected__(self, new_user_address, username : bytes):
         self.clients[username] = new_user_address
         print("New user connected")
+        print("Username: ", username.decode("utf-8"))
         print("IP: ", new_user_address[0])
         print("PORT: ", new_user_address[1])
         self.__print_separate_line__()
@@ -91,6 +96,9 @@ class Server:
     @staticmethod
     def __get_current_time__():
         return time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
+
+    def get_host(self):
+        return self.host
 
 
 server = Server()

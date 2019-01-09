@@ -24,3 +24,9 @@ $ python3 Client/Client.py
 
 - mv.yurchenko.dev@gmail.com
 - telegram : @mv_yurchenko
+
+### Coming soon:
+
+- Authentication
+- New cryptography module 
+- Chess Neural Network
