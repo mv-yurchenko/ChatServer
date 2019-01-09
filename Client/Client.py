@@ -1,11 +1,9 @@
 import socket
-from threading import Thread
 import threading
 from tkinter import messagebox
 from tkinter import *
 import time
 from Cryptography.Cryptography import Cryptography
-from queue import Queue
 
 HOST = "192.168.0.13"
 # HOST = "127.0.1.1"
@@ -36,12 +34,14 @@ class Client:
         self.companion_login = "no"
 
         # Режим Private Talk (1 на 1)
+        # TODO: Private
         self.is_private_talk = is_private
         if self.is_private_talk:
             self.msg_receiver = "private"
             self.companion_login = companion_login
-        self.gui_initialize()
 
+        # GUI initialization
+        self.gui_initialize()
 
     def close_client(self):
         """Закрывает сокет и останавливает поток"""
@@ -65,16 +65,20 @@ class Client:
         while not self.stop_receiving:
             try:
                 while True:
+                    # Get data and address from received message
                     data, addr = self.sock.recvfrom(4096)
                     msg_time = self.__get_current_time__()
+
+                    # Split and decrypt data
                     sender, msg_text = data.decode("utf-8").split("::")
-                    print(sender)
                     decrypted_msg = self.__decrypt_msg__(msg_text.encode("utf-8"))
-                    time.sleep(0.2)
-                    print(decrypted_msg)
-                    self.messages_output.insert(END, str(self.messages_history))
-                    # Add time for output
+
+                    # TODO : Output function
+                    self.messages_output.insert(END, self.format_message_for_output(sender, decrypted_msg))
+
+                    # Add message to messages history
                     self.messages_history.append((msg_time, sender, decrypted_msg))
+
             except Exception as _:
                 pass
 
@@ -94,7 +98,6 @@ class Client:
         msg = str()
         msg += self.username
         msg += "::" + self.msg_receiver
-        # print(self.companion_login)
         msg += "::" + self.companion_login
         msg += "::" + encrypted_msg
         return msg.encode("utf-8")
@@ -110,13 +113,19 @@ class Client:
         return time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
 
     def gui_initialize(self):
+
+        # Initialize Client window
         self.window = Tk()
         self.window.title("ChatClient")
         self.window.geometry("800x600")
+
+        # Definition of blocks size
         send_message_line_height = 25
         text_windows_width = 560
         second_column_start = 580
         second_column_width = 200
+
+        # Window elements initialization
 
         self.message_input = Text(self.window)
         self.message_input.place(x=10, y=570, width=text_windows_width,
@@ -156,6 +165,17 @@ class Client:
 
     def send_message_button_clicked(self):
         self.send_message(self.message_input.get("1.0", END))
+        # Clear message string after sending message
+        self.message_input.delete("1.0", END)
+
+    def format_message_for_output(self, sender: str, decrypted_msg: str) -> str:
+        return self.__get_current_time__() + " : " + sender + " : " + decrypted_msg + "\n"
 
 
-a = Client("user")
+def main():
+    a = Client("user")
+
+
+if __name__ == '__main__':
+    main()
+
