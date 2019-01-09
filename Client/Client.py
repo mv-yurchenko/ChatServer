@@ -12,9 +12,6 @@ HOST = "192.168.0.13"
 TEST_CRYPTO_KEY = "Rh0xMeKP2lzezFWiNMUMV1KavMsQ4s_jjycIfZdVF6k="
 
 
-# TODO:Fix global host
-
-
 class Client:
 
     def __init__(self, username, is_private=False, companion_login=None, host=HOST):
