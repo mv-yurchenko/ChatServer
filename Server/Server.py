@@ -52,10 +52,19 @@ class Server:
                 print(e)
 
     def __send_msg_type_all__(self, sender, msg_text, address):
-        for client in self.clients.values():
-            msg = sender + "::" + msg_text
-            if client != address:
-                self.sock.sendto(msg.encode("utf-8"), client)
+        # Variable to catch disconnected clients
+        disconnected_client = None
+        try:
+            for client in self.clients.values():
+                # If sending data will be successful, client won't be disconnected
+                disconnected_client = client
+                msg = sender + "::" + msg_text
+                if client != address:
+                    self.sock.sendto(msg.encode("utf-8"), client)
+
+        except Exception as e:
+            # Disconnect client if sending failed
+            self.clients = {key: val for key, val in self.clients.items() if val != client}
 
     def __send_msg_type_private(self, sender, msg_text, receiver):
         pass
