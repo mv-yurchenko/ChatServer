@@ -1,0 +1,384 @@
+Index: .vscode/settings.json
+===================================================================
+--- .vscode/settings.json	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
++++ .vscode/settings.json	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
+@@ -1,3 +0,0 @@
+-{
+-    "python.pythonPath": "C:\\Users\\Max Yurchenko\\AppData\\Local\\Programs\\Python\\Python35\\python.exe"
+-}
+\ No newline at end of file
+Index: client.py
+===================================================================
+--- client.py	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
++++ client.py	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
+@@ -1,5 +0,0 @@
+-from ClientUI import ClientUI
+-
+-
+-obj = ClientUI("User")
+-obj.print_header()
+\ No newline at end of file
+Index: ClientUI.py
+===================================================================
+--- ClientUI.py	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
++++ ClientUI.py	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
+@@ -1,64 +0,0 @@
+-from Client.Client import Client
+-import time
+-import os
+-import platform
+-from threading import Thread
+-
+-
+-VERSION = "1.1"
+-
+-
+-class ClientUI:
+-
+-    def __init__(self):
+-        self.print_header(first_print=True)
+-        self.username = input("Input username: ")
+-        self.mode = None
+-        self.companion = None
+-        self.input_client_mode()
+-        self.client_obj = Client(self.username, is_private=self.mode == "private", companion_login=self.companion)
+-
+-    def print_header(self, first_print = False):
+-        print("ChatClient v" + VERSION)
+-        if not first_print:
+-            # В первый раз порта нет, так как клиент еще не инициализирован
+-            print("IP: " + self.client_obj.get_host())
+-        print(time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime()))
+-
+-    def input_client_mode(self):
+-        is_public = bool(input("Is public (1 or 0) : "))
+-        if not is_public:
+-            self.mode = "private"
+-            self.companion = str(input("Input companion login"))
+-        else:
+-            self.mode = "public"
+-
+-    def main_print_loop(self):
+-        exit = False
+-        while not exit:
+-            self.__clear_screen__()
+-            self.print_header()
+-            self.__print_separate_line__()
+-            messages_data = self.client_obj.get_messages_data()
+-            self.print_messages(messages_data)
+-            time.sleep(0.1)
+-
+-    @staticmethod
+-    def __clear_screen__():
+-        if platform.system() == "Windows":
+-            os.system("cls")
+-        if platform.system() == "Linux":
+-            os.system("clear")
+-
+-    @staticmethod
+-    def print_messages(messages_data: list):
+-        for msg_time, sender, message in messages_data:
+-            print(msg_time + " : " + sender + ":" + message)
+-
+-    @staticmethod
+-    def __print_separate_line__():
+-        print("\n--------------------------------------------------\n")
+-
+-
+-a = ClientUI()
+-a.main_print_loop()
+Index: mainWindow.py
+===================================================================
+--- mainWindow.py	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
++++ mainWindow.py	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
+@@ -1,129 +0,0 @@
+-# -*- coding: utf-8 -*-
+-
+-from PyQt5 import QtWidgets, QtCore
+-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction
+-from Client.Client import Client
+-import sys
+-from threading import Thread
+-from queue import Queue
+-
+-
+-class Ui_MainWindow(QMainWindow):
+-
+-    def __init__(self):
+-        super().__init__()
+-        self.setupUi(self)  # Это нужно для инициализации нашего дизайна
+-        self.StartClientButton.clicked.connect(self.button_start_clicked)
+-        self.client_obj : Client
+-        self.gui_connector = Queue()
+-        self.output_thread = Thread(target=self.print_messages)
+-
+-    def setupUi(self, MainWindow):
+-        MainWindow.setObjectName("MainWindow")
+-        MainWindow.resize(800, 600)
+-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+-        self.centralwidget.setObjectName("centralwidget")
+-        self.sendMessageButton = QtWidgets.QPushButton(self.centralwidget)
+-        self.sendMessageButton.setGeometry(QtCore.QRect(380, 520, 111, 27))
+-        self.sendMessageButton.setObjectName("sendMessageButton")
+-        self.sendMessageButton.clicked.connect(self.send_message_button_clicked)
+-        self.inputMessageLineEdit = QtWidgets.QLineEdit(self.centralwidget)
+-        self.inputMessageLineEdit.setGeometry(QtCore.QRect(30, 520, 321, 27))
+-        self.inputMessageLineEdit.setObjectName("inputMessageLineEdit")
+-        self.MessagesOutputWidget = QtWidgets.QTextBrowser(self.centralwidget)
+-        self.MessagesOutputWidget.setGeometry(QtCore.QRect(20, 30, 461, 481))
+-        self.MessagesOutputWidget.setObjectName("MessagesOutputWidget")
+-        self.inputUsernameLabel = QtWidgets.QLabel(self.centralwidget)
+-        self.inputUsernameLabel.setGeometry(QtCore.QRect(490, 30, 111, 21))
+-        self.inputUsernameLabel.setObjectName("inpuUsernameLabel")
+-        self.inputUsernameLineEdit = QtWidgets.QLineEdit(self.centralwidget)
+-        self.inputUsernameLineEdit.setGeometry(QtCore.QRect(600, 30, 150, 21))
+-        self.inputUsernameLineEdit.setObjectName("inputUsernameLineEdit")
+-        self.StartClientButton = QtWidgets.QPushButton(self.centralwidget)
+-        self.StartClientButton.setGeometry(QtCore.QRect(751, 30, 46, 20))
+-        self.StartClientButton.setObjectName("StartClientButton")
+-        self.HostLabel = QtWidgets.QLabel(self.centralwidget)
+-        self.HostLabel.setGeometry(QtCore.QRect(490, 60, 41, 17))
+-        self.HostLabel.setObjectName("HostLabel")
+-        self.hostOutput = QtWidgets.QLineEdit(self.centralwidget)
+-        self.hostOutput.setGeometry(QtCore.QRect(530, 60, 113, 20))
+-        self.hostOutput.setObjectName("hostOutput")
+-        MainWindow.setCentralWidget(self.centralwidget)
+-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 25))
+-        self.menubar.setObjectName("menubar")
+-        self.topMenu = QtWidgets.QMenu(self.menubar)
+-        self.topMenu.setObjectName("topMenu")
+-        MainWindow.setMenuBar(self.menubar)
+-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+-        self.statusbar.setObjectName("statusbar")
+-        MainWindow.setStatusBar(self.statusbar)
+-        self.exit_button = QtWidgets.QAction(MainWindow)
+-        self.exit_button.setObjectName("actionExit")
+-        self.topMenu.addAction(self.exit_button)
+-        self.menubar.addAction(self.topMenu.menuAction())
+-
+-        self.retranslateUi(MainWindow)
+-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+-
+-    def retranslateUi(self, MainWindow):
+-        _translate = QtCore.QCoreApplication.translate
+-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+-        self.sendMessageButton.setText(_translate("MainWindow", "Send Message"))
+-        self.inputUsernameLabel.setText(_translate("MainWindow", "Input Username"))
+-        self.StartClientButton.setText(_translate("MainWindow", "Start"))
+-        self.HostLabel.setText(_translate("MainWindow", "Host:"))
+-        self.topMenu.setTitle(_translate("MainWindow", "Menu"))
+-        self.exit_button.setText(_translate("MainWindow", "Exit"))
+-        self.exit_button.triggered.connect(self.button_exit_clicked)
+-
+-    def print_messages(self):
+-        self.MessagesOutputWidget.setText(str(self.client_obj.get_messages_data()))
+-
+-    def button_start_clicked(self):
+-        # Return colour to black if btn was already pressed with empty field
+-        self.inputUsernameLineEdit.setStyleSheet("color:black")
+-
+-        username = self.inputUsernameLineEdit.text()
+-
+-        # If username is empty -> print red string
+-        if self.is_username_empty(username):
+-            # Output red text in inputMessageLineEdit
+-            self.inputUsernameLineEdit.setStyleSheet("color:red")
+-            self.inputUsernameLineEdit.setText("no username")
+-        else:
+-            self.client_obj = Client(username)
+-            self.gui_connector = self.client_obj.get_gui_connector()
+-            print(self.client_obj.get_host())
+-            print("ok")
+-
+-        # Start print messages
+-
+-    def print_messages(self):
+-        self.MessagesOutputWidget.setText(str(self.client_obj.get_messages_data()))
+-
+-    def send_message_button_clicked(self):
+-        # TODO : Rework
+-        self.MessagesOutputWidget.setText(str(self.gui_connector.get()))
+-
+-    @staticmethod
+-    def is_username_empty(username):
+-        return username == "" or username == "no username"
+-
+-    def button_exit_clicked(self):
+-        self.output_thread.join()
+-        if self.client_obj:
+-            self.client_obj.close_client()
+-        self.close()
+-
+-
+-def main():
+-    app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
+-    window = Ui_MainWindow()  # Создаём объект класса ExampleApp
+-    window.show()  # Показываем окно
+-    app.exec_()  # и запускаем приложение
+-
+-
+-if __name__ == '__main__':  # Если мы запускаем файл напрямую, а не импортируем
+-    main()  # то запускаем функцию main()
+-
+Index: mainWindow.ui
+===================================================================
+--- mainWindow.ui	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
++++ mainWindow.ui	(revision 2a3fbf4a47bea308c63b1cc2a8fd62edcd3431c4)
+@@ -1,136 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<ui version="4.0">
+- <class>MainWindow</class>
+- <widget class="QMainWindow" name="MainWindow">
+-  <property name="geometry">
+-   <rect>
+-    <x>0</x>
+-    <y>0</y>
+-    <width>800</width>
+-    <height>586</height>
+-   </rect>
+-  </property>
+-  <property name="windowTitle">
+-   <string>MainWindow</string>
+-  </property>
+-  <widget class="QWidget" name="centralwidget">
+-   <widget class="QPushButton" name="sendMessageButton">
+-    <property name="geometry">
+-     <rect>
+-      <x>380</x>
+-      <y>520</y>
+-      <width>111</width>
+-      <height>27</height>
+-     </rect>
+-    </property>
+-    <property name="text">
+-     <string>Send Message</string>
+-    </property>
+-   </widget>
+-   <widget class="QLineEdit" name="inputMessageLineEdit">
+-    <property name="geometry">
+-     <rect>
+-      <x>30</x>
+-      <y>520</y>
+-      <width>321</width>
+-      <height>27</height>
+-     </rect>
+-    </property>
+-   </widget>
+-   <widget class="QTextBrowser" name="textBrowser">
+-    <property name="geometry">
+-     <rect>
+-      <x>20</x>
+-      <y>30</y>
+-      <width>461</width>
+-      <height>481</height>
+-     </rect>
+-    </property>
+-   </widget>
+-   <widget class="QLabel" name="inpuUsernameLabel">
+-    <property name="geometry">
+-     <rect>
+-      <x>490</x>
+-      <y>30</y>
+-      <width>111</width>
+-      <height>21</height>
+-     </rect>
+-    </property>
+-    <property name="text">
+-     <string>Input Username</string>
+-    </property>
+-   </widget>
+-   <widget class="QLineEdit" name="lineEdit">
+-    <property name="geometry">
+-     <rect>
+-      <x>600</x>
+-      <y>30</y>
+-      <width>113</width>
+-      <height>21</height>
+-     </rect>
+-    </property>
+-   </widget>
+-   <widget class="QPushButton" name="StartClientButton">
+-    <property name="geometry">
+-     <rect>
+-      <x>720</x>
+-      <y>30</y>
+-      <width>51</width>
+-      <height>20</height>
+-     </rect>
+-    </property>
+-    <property name="text">
+-     <string>Start</string>
+-    </property>
+-   </widget>
+-   <widget class="QLabel" name="HostLabel">
+-    <property name="geometry">
+-     <rect>
+-      <x>490</x>
+-      <y>60</y>
+-      <width>41</width>
+-      <height>17</height>
+-     </rect>
+-    </property>
+-    <property name="text">
+-     <string>Host:</string>
+-    </property>
+-   </widget>
+-   <widget class="QLineEdit" name="hostOutput">
+-    <property name="geometry">
+-     <rect>
+-      <x>530</x>
+-      <y>60</y>
+-      <width>113</width>
+-      <height>20</height>
+-     </rect>
+-    </property>
+-   </widget>
+-  </widget>
+-  <widget class="QMenuBar" name="menubar">
+-   <property name="geometry">
+-    <rect>
+-     <x>0</x>
+-     <y>0</y>
+-     <width>800</width>
+-     <height>25</height>
+-    </rect>
+-   </property>
+-   <widget class="QMenu" name="topMenu">
+-    <property name="title">
+-     <string>Menu</string>
+-    </property>
+-    <addaction name="actionExit"/>
+-   </widget>
+-   <addaction name="topMenu"/>
+-  </widget>
+-  <widget class="QStatusBar" name="statusbar"/>
+-  <action name="actionExit">
+-   <property name="text">
+-    <string>Exit</string>
+-   </property>
+-  </action>
+- </widget>
+- <resources/>
+- <connections/>
+-</ui>
+Index: setup.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- setup.py	(date 1547108342000)
++++ setup.py	(date 1547108342000)
+@@ -0,0 +1,12 @@
++from setuptools import setup
++
++setup(
++    name='ChatServer',
++    version='2.0',
++    packages=['Client', 'Server', 'Message', 'Cryptography'],
++    url='github.com/mv-yurchenko/ChatServer',
++    license='MIT License',
++    author='mv_yurchenko',
++    author_email='',
++    description=''
++)
