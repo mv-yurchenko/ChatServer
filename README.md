@@ -23,7 +23,6 @@ $ python3 Client/Client.py
 #### Contact me for any questions 
 
 - mv.yurchenko.dev@gmail.com
-- telegram : @mv_yurchenko
 
 ### Coming soon:
 
