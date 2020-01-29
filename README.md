@@ -23,9 +23,3 @@ $ python3 Client/Client.py
 #### Contact me for any questions 
 
 - mv.yurchenko.dev@gmail.com
-
-### Coming soon:
-
-- Authentication
-- New cryptography module 
-- Chess Neural Network
